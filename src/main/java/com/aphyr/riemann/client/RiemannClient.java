@@ -75,6 +75,11 @@ public class RiemannClient extends AbstractRiemannClient implements DualTranspor
     this.transport = t;
   }
 
+  // initializer
+  {
+    LocalhostResolver.start(scheduler());
+  }
+
   // Send and receive messages
   @Override
   public Msg sendRecvMessage(final Msg m) throws IOException {

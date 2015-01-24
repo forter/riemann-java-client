@@ -1,11 +1,14 @@
 package riemann.java.client.tests;
 
 import com.aphyr.riemann.client.LocalhostResolver;
+import com.aphyr.riemann.client.RiemannClient;
+import com.aphyr.riemann.client.RiemannScheduler;
 import junit.framework.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import java.io.IOException;
 import java.lang.reflect.Field;
 import java.net.UnknownHostException;
 import java.util.Collections;
@@ -25,32 +28,48 @@ public class LocalhostResolveTest {
         env.remove(LocalhostResolver.HOSTNAME);
         env.remove(LocalhostResolver.COMPUTERNAME);
         setEnv(env);
-
-        LocalhostResolver.refreshIntervalMillis = 1000;
     }
 
     @Before
     public void setup() {
         LocalhostResolver.setLastUpdateTime(0);
         Assert.assertEquals(0, LocalhostResolver.getLastUpdateTime());
+
+        try {
+            LocalhostResolver.start(1000, RiemannClient.tcp("localhost").scheduler());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     @Test
     public void testUpdateInterval() {
-        Assert.assertEquals(0, LocalhostResolver.getLastUpdateTime());
+        String hostname = LocalhostResolver.getResolvedHostname();
+        long firstUpdateTime = LocalhostResolver.getLastUpdateTime();
+        Assert.assertNotNull(hostname);
+
+        try {
+            Thread.sleep(2000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        Assert.assertNotSame(firstUpdateTime, LocalhostResolver.getLastUpdateTime());
+    }
+
+    @Test
+    public void testResolveNow() {
         String hostname = LocalhostResolver.getResolvedHostname();
         long lastUpdateTime = LocalhostResolver.getLastUpdateTime();
         Assert.assertNotNull(hostname);
 
-        // simulate time passing
-        LocalhostResolver.setLastUpdateTime(lastUpdateTime - (LocalhostResolver.refreshIntervalMillis + 500));
+        LocalhostResolver.resolveNow();
 
         Assert.assertNotSame(lastUpdateTime, LocalhostResolver.getLastUpdateTime());
     }
 
     @Test
     public void testCaching() {
-        Assert.assertEquals(0, LocalhostResolver.getLastUpdateTime());
         String hostname1 = LocalhostResolver.getResolvedHostname();
         long updateTime1 = LocalhostResolver.getLastUpdateTime();
         Assert.assertNotNull(hostname1);
@@ -79,6 +98,7 @@ public class LocalhostResolveTest {
         env = new HashMap<String, String>(System.getenv());
         env.put(LocalhostResolver.COMPUTERNAME, EXPECTED_ENV_LOCALHOST);
         setEnv(env);
+        LocalhostResolver.setLastUpdateTime(0);
         LocalhostResolver.resolveByEnv(); // force re-init
 
         String hostname = LocalhostResolver.getResolvedHostname();
@@ -91,6 +111,7 @@ public class LocalhostResolveTest {
         env = new HashMap<String, String>(System.getenv());
         env.put(LocalhostResolver.HOSTNAME, EXPECTED_ENV_LOCALHOST);
         setEnv(env);
+        LocalhostResolver.setLastUpdateTime(0);
         LocalhostResolver.resolveByEnv(); // force re-init
 
         System.getProperties().put(OS_NAME_PROP, "Linux");

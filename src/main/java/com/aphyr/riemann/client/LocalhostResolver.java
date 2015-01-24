@@ -1,6 +1,10 @@
 package com.aphyr.riemann.client;
 
 import java.net.UnknownHostException;
+import java.util.Timer;
+import java.util.TimerTask;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
 
 /**
  * A "Smarter" localhost resolver
@@ -22,51 +26,92 @@ public class LocalhostResolver {
     public static final String HOSTNAME = "HOSTNAME"; // Nix
 
     // how often should we refresh the cached hostname
-    public static long refreshIntervalMillis = 60 * 1000;
+    private static long refreshIntervalMillis = 60 * 1000;
 
-    // cached hostname result
-    private static String envHostname;
-    private static String hostname;
+    // the cached resolved hostname
+    // our timer thread is the only writer of this variable
+    private static volatile String hostname;
 
-    // update (refresh) time management
-    private static long lastUpdate = 0;
+    // periodically updates the hostname
+    // will run as daemon thread
+    private static final Timer timer = new Timer("LocalhostResolver", true);
+
+    // when using riemann scheduler
+    private static ScheduledFuture scheduledFuture;
+
+    // this is mostly for testing/monitoring
+    private static volatile long lastUpdate = 0;
     public static long getLastUpdateTime() { return lastUpdate; }
-    // this is mostly for testing, plus ability to force a refresh
-    public static void setLastUpdateTime(long time) {
-        lastUpdate = time;
+    public static void setLastUpdateTime(long time) { lastUpdate = time; }
+
+    public static void start(RiemannScheduler scheduler) {
+        start(refreshIntervalMillis, scheduler);
     }
 
-    static {
+    public static void start(long refreshIntervalMillis, RiemannScheduler scheduler) {
+        if(scheduledFuture != null) {
+            scheduledFuture.cancel(false);
+        }
+
+        LocalhostResolver.refreshIntervalMillis = refreshIntervalMillis;
         resolveByEnv();
+        if(hostname == null) {
+            scheduledFuture = scheduler.every(refreshIntervalMillis, TimeUnit.MILLISECONDS, new Runnable() {
+                @Override
+                public void run() {
+                    refreshResolve();
+                    System.out.println(String.format("resolveTimer[%d]:%s", lastUpdate, hostname));
+                }
+            });
+//            startUpdateTimer();
+        }
+    }
+
+    /**
+     * starts the timer thread to resolve hostname every interval
+     */
+    private static void startUpdateTimer() {
+        // not fixed-rate, delay interval from last refresh
+        timer.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                refreshResolve();
+                System.out.println(String.format("resolveTimer[%d]:%s", lastUpdate, hostname));
+            }
+        }, 0, refreshIntervalMillis);
     }
 
     /**
      * get resolved hostname.
-     * encapsulates all lookup and caching logic.
      *
      * @return the hostname
      */
     public static String getResolvedHostname() {
-        long now = System.currentTimeMillis();
-        if((now - refreshIntervalMillis) > lastUpdate) {
-            refreshResolve();
-        }
-
         return hostname;
     }
 
-    /**
-     * forces a new resolve even if refresh interval has not passed yet
-     */
-    public static void refreshResolve() {
-        try {
-            if(envHostname == null || envHostname.isEmpty()) {
-                hostname = java.net.InetAddress.getLocalHost().getHostName();
-                if (hostname == null) {
-                    hostname = "localhost";
+    public static void resolveNow() {
+        if(timer != null) {
+            timer.schedule(new TimerTask() {
+                @Override
+                public void run() {
+                    refreshResolve();
+                    System.out.println(String.format("resolveNow[%d]:%s", lastUpdate, hostname));
                 }
-                lastUpdate = System.currentTimeMillis();
+            }, 0);
+        }
+    }
+
+    /**
+     * forces a new resolve
+     */
+    private static void refreshResolve() {
+        try {
+            hostname = java.net.InetAddress.getLocalHost().getHostName();
+            if (hostname == null) {
+                hostname = "localhost";
             }
+            lastUpdate = System.currentTimeMillis();
         } catch (UnknownHostException e) {
             // fallthrough
         }
@@ -88,7 +133,6 @@ public class LocalhostResolver {
             var = System.getenv(HOSTNAME);
         }
 
-        envHostname = var;
-        hostname = envHostname;
+        hostname = var;
     }
 }
