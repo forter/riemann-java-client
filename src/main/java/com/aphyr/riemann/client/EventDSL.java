@@ -14,15 +14,21 @@ public class EventDSL {
     public final Event.Builder builder;
     public final Map<String, String> attributes = new HashMap<String, String>();
 
-    public EventDSL(AbstractRiemannClient client) {
-        this.client = client;
-        this.builder = Event.newBuilder();
+    private static String host;
+
+    static {
         try {
-            this.builder.setHost(java.net.InetAddress.getLocalHost().getHostName());
+            EventDSL.host = java.net.InetAddress.getLocalHost().getHostName();
         } catch (java.net.UnknownHostException e) {
             // If we can't get the local host, a null host is perfectly
             // acceptable.  Caller will know soon enough. :)
         }
+    }
+
+    public EventDSL(AbstractRiemannClient client) {
+        this.client = client;
+        this.builder = Event.newBuilder();
+        this.builder.setHost(EventDSL.host);
     }
 
     public EventDSL host(String host) {
