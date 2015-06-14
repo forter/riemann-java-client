@@ -2,9 +2,9 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	       xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-	<groupId>com.aphyr</groupId>
+	<groupId>com.forter</groupId>
 	<artifactId>riemann-java-client</artifactId>
-  <version>0.2.10</version>
+  <version>0.2.12</version>
 	<packaging>bundle</packaging>
 	<name>Riemann Java Client</name>
 	<description>Java client for http://aphyr.github.com/riemann/</description>
@@ -97,6 +97,14 @@
       </plugin>
 
       <plugin>
+        <artifactId>maven-install-plugin</artifactId>
+        <version>2.5.1</version>
+        <configuration>
+          <createChecksum>true</createChecksum>
+        </configuration>
+      </plugin>
+
+      <plugin>
 	<groupId>org.apache.maven.plugins</groupId>
 	<artifactId>maven-source-plugin</artifactId>
 	<version>2.2.1</version>
@@ -169,12 +177,4 @@
         </plugin>
     </plugins>
   </build>
-
-  <distributionManagement>
-    <repository>
-      <id>clojars.org</id>
-      <name>Clojars</name>
-      <url>https://clojars.org/repo</url>
-    </repository>
-  </distributionManagement>
 </project>
