@@ -1,5 +1,6 @@
 target
 bin
 .*
+!/.travis.yml
 repl-port
 *.iml
