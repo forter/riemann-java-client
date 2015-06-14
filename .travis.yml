@@ -11,8 +11,8 @@ deploy:
   secret_access_key:
     secure: "yqFueGXnmdZMJRO/0/2lo2H2ZTBBwFtT4XJUzJvkgqxHUOvaE1I/hMw6MbyDgsMRPb5tqbmPeNyleVeg18N/ph9Mof/ak+KX35zXUNjh1wwlSK0AVfVtnbjPiJeKFXvAlX67W7oxvtR8fw6FieQB+A0/zm4g7kPKxOupPcAsYYI="
   bucket: oss.forter.com
-  local-dir: /home/travis/.m2/repository/com/forter/riemann-storm-monitor/
-  upload-dir: repository/com/forter/riemann-storm-monitor
+  local-dir: /home/travis/.m2/repository/com/forter/riemann-java-client/
+  upload-dir: repository/com/forter/riemann-java-client
   skip_cleanup: true
   on:
     all_branches: true
