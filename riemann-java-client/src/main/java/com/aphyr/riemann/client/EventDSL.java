@@ -4,6 +4,7 @@ import com.aphyr.riemann.Proto.Attribute;
 import com.aphyr.riemann.Proto.Event;
 import com.aphyr.riemann.Proto.Msg;
 
+import java.net.UnknownHostException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -14,15 +15,20 @@ public class EventDSL {
     public final Event.Builder builder;
     public final Map<String, String> attributes = new HashMap<String, String>();
 
-    public EventDSL(IRiemannClient client) {
-        this.client = client;
-        this.builder = Event.newBuilder();
+    private static String cachedHost;
+    static {
         try {
-            this.builder.setHost(java.net.InetAddress.getLocalHost().getHostName());
-        } catch (java.net.UnknownHostException e) {
+            cachedHost = java.net.InetAddress.getLocalHost().getHostName();
+        } catch (UnknownHostException e) {
             // If we can't get the local host, a null host is perfectly
             // acceptable.  Caller will know soon enough. :)
         }
+    }
+
+    public EventDSL(IRiemannClient client) {
+        this.client = client;
+        this.builder = Event.newBuilder();
+        this.builder.setHost(cachedHost);
     }
 
     public EventDSL host(String host) {

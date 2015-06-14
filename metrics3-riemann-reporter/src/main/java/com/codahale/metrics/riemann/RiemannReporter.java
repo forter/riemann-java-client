@@ -65,6 +65,15 @@ public class RiemannReporter extends ScheduledReporter {
         private String localHost;
         private final List<String> tags;
 
+        private static String cachedHost;
+        static {
+            try {
+                cachedHost = java.net.InetAddress.getLocalHost().getHostName();
+            } catch (UnknownHostException e) {
+                // If we can't get the local host, a null host is perfectly
+                // acceptable.  Caller will know soon enough. :)
+            }
+        }
 
         private Builder(MetricRegistry registry) {
             this.registry = registry;
@@ -76,11 +85,7 @@ public class RiemannReporter extends ScheduledReporter {
             this.tags = new ArrayList<String>();
             this.prefix = null;
             this.separator = " ";
-            try {
-                this.localHost = InetAddress.getLocalHost().getHostName();
-            } catch (UnknownHostException e) {
-                this.localHost = null;
-            }
+            this.localHost = cachedHost;
         }
 
         /**
