@@ -9,9 +9,9 @@ script:
 deploy:
   provider: s3
   access_key_id:
-    secure: izTJZk+6mGiTeja30d7/4FqAlrPUAqBW7LgYOfp18hVl6IWt85nXkdgCcUdYuNGGGmIwQIt/JlPAUpvoiU+RrLyrAj88VjLLz3H+JGQKfkNzOXin5d2EvNgyiibgs96fyTJ5nMwT/XGf65IR8V8IIbl9UXFyWM1ZXNBcIlQQu1Q=
+    secure: OTZ1vUSx1+EdhAZ4jIqoGcmC4tfRap+cpQxaIaO6Ux41Zj45NJ9ZMRVd/9HzOWHiGTHBcQUZ/qZcZBzDNujXB2AWgiGtrkRsbH5e6x2eVJZgTsZDf8KM0S1hn9JjZ1HzrZUGcicns7WHAyi+75rsKbNMjlOFWmVDyZKgDv7LUJw=
   secret_access_key:
-    secure: ZSgPRJYrYRuDlzHiquRZMtjUYyPKKvmY4GtmlQq3/gLOravH2YiOnL9Wfmidr+ZMTb2v9b52rPe383HepiyfE4Tz0Lw4o55uHCEzdW0A/C/dZ5C3Ut/ocVGIsTrnNFo5fwdkS2/Vx6PyVn9JIt8awg07ITLzEKZ4UMfpegAq2R0=
+    secure: HsAWCzoTBVw7VIH1ItiDLtBRRyrNDpyXJo4syq4T9wV3H6TeqUIbSe0AbEwGrZoLZoKrNF4m+c1y9rAHcaov4Brj8mwPoFadBkRyEDu8Z1Gx9NLmMRT5BxHaeu3wd9NDUdrkZxXVI7uOlHQv37jArZBX4fgYR3Qa3q1RIZEFVnk=
   bucket: oss.forter.com
   local-dir: "/home/travis/.m2/repository/com/forter/riemann-java-client/"
   upload-dir: repository/com/forter/riemann-java-client
