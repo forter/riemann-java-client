@@ -10,7 +10,7 @@
 
 /* rich Feb 9, 2009 */
 
-package clojure.lang;
+package com.aphyr.riemann.client.lang;
 
 public interface IDeref{
   Object deref() throws Exception;

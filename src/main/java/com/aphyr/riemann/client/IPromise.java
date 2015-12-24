@@ -1,8 +1,9 @@
 package com.aphyr.riemann.client;
 
-import java.util.concurrent.TimeUnit;
+import com.aphyr.riemann.client.lang.IDeref;
+
 import java.io.IOException;
-import clojure.lang.IDeref;
+import java.util.concurrent.TimeUnit;
 
 public interface IPromise<T> extends IDeref {
   public void deliver(Object value);
