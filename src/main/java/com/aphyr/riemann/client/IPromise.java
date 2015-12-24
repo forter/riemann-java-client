@@ -1,7 +1,5 @@
 package com.aphyr.riemann.client;
 
-import com.aphyr.riemann.client.lang.IDeref;
-
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 
