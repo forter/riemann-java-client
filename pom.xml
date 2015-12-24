@@ -30,11 +30,6 @@
             <version>3.6.1.Final</version>
         </dependency>
         <dependency>
-            <groupId>com.yammer.metrics</groupId>
-            <artifactId>metrics-core</artifactId>
-            <version>2.1.2</version>
-        </dependency>
-        <dependency>
             <groupId>com.codahale.metrics</groupId>
             <artifactId>metrics-core</artifactId>
             <version>3.0.1</version>
@@ -147,10 +142,10 @@
                 <configuration>
                     <instructions>
                         <Export-Package>
-                            com.aphyr.riemann;-noimport:=true, com.aphyr.riemann.client;-noimport:=true, com.codahale.metrics.riemann;-noimport:=true, com.yammer.metrics.reporting;-noimport:=true
+                            com.aphyr.riemann;-noimport:=true, com.aphyr.riemann.client;-noimport:=true, com.codahale.metrics.riemann;-noimport:=true
                         </Export-Package>
                         <Import-Package>
-                            com.codahale.metrics;version="[3.0,4)";resolution:="optional", com.yammer.metrics;resolution:="optional", com.yammer.metrics.core;resolution:="optional", com.yammer.metrics.stats;resolution:="optional", *
+                            com.codahale.metrics;version="[3.0,4)";resolution:="optional", *
                         </Import-Package>
                     </instructions>
                 </configuration>
