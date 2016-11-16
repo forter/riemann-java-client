@@ -67,11 +67,14 @@ public class RiemannReporter extends ScheduledReporter {
 
         private static String cachedHost;
         static {
-            try {
-                cachedHost = java.net.InetAddress.getLocalHost().getHostName();
-            } catch (UnknownHostException e) {
-                // If we can't get the local host, a null host is perfectly
-                // acceptable.  Caller will know soon enough. :)
+            cachedHost = System.getenv("RIEMANN_EVENTS_ID_HOSTNAME");
+            if (cachedHost == null) {
+                try {
+                    cachedHost = java.net.InetAddress.getLocalHost().getHostName();
+                } catch (UnknownHostException e) {
+                    // If we can't get the local host, a null host is perfectly
+                    // acceptable.  Caller will know soon enough. :)
+                }
             }
         }
 
